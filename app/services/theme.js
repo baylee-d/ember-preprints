@@ -1,7 +1,5 @@
-import { computed } from '@ember/object';
-import { observer } from '@ember/object';
-import { inject } from '@ember/service';
-import Service from '@ember/service';
+import { computed, observer } from '@ember/object';
+import Service, { inject } from '@ember/service';
 import $ from 'jquery';
 import config from 'ember-get-config';
 import buildProviderAssetPath from '../utils/build-provider-asset-path';
@@ -12,7 +10,8 @@ import buildProviderAssetPath from '../utils/build-provider-asset-path';
  */
 
 /**
- * Detects preprint provider and allows you to inject that provider's theme into parts of your application
+ * Detects preprint provider and allows you to inject that
+ * provider's theme into parts of your application
  *
  * @class theme
  * @extends Service
@@ -32,25 +31,28 @@ export default Service.extend({
 
     // The provider object
     provider: computed('id', function() {
-        const id = this.get('id');
-        const store = this.get('store');
-
+        const self = this;
+        const id = self.get('id');
+        const store = self.get('store');
+        // BAYLEE I MODIFIED THIS USING self = this and adding the providerCallback below, can you confirm that's the write way to solve this lint?
         // Check if redirect is enabled for the current provider
-        if (!window.isProviderDomain && this.get('isProvider')) {
+        if (!window.isProviderDomain && self.get('isProvider')) {
             store.findRecord('preprint-provider', id)
-                .then(provider => {
-                    if (provider.get('domainRedirectEnabled')) {
-                        const domain = provider.get('domain');
-                        const {href, origin} = window.location;
-                        const url = href.replace(new RegExp(`^${origin}/preprints/${id}/?`), domain);
-
-                        window.location.replace(url);
-                    }
-                });
+                .then(self.providerCallback(this, id));
         }
 
         return store.findRecord('preprint-provider', id);
     }),
+
+    providerCallback(provider, id) {
+        if (provider.get('domainRedirectEnabled')) {
+            const domain = provider.get('domain');
+            const { href, origin } = window.location;
+            const url = href.replace(new RegExp(`^${origin}/preprints/${id}/?`), domain);
+
+            window.location.replace(url);
+        }
+    },
 
     // If we're using a branded provider
     isProvider: computed('id', function() {
@@ -98,7 +100,7 @@ export default Service.extend({
             path: buildProviderAssetPath(config, id, 'sharing.png', this.get('isDomain')),
             type: 'image/png',
             width: 1200,
-            height: 630
+            height: 630,
         };
     }),
 
@@ -106,7 +108,7 @@ export default Service.extend({
     signupUrl: computed('id', function() {
         const query = $.param({
             campaign: `${this.get('id')}-preprints`,
-            next: window.location.href
+            next: window.location.href,
         });
 
         return `${config.OSF.url}register?${query}`;
@@ -121,9 +123,9 @@ export default Service.extend({
             type: 'link',
             attrs: {
                 rel: 'shortcut icon',
-                href: buildProviderAssetPath(config, this.get('id'), 'favicon.ico', window.isProviderDomain)
-            }
-        }]
+                href: buildProviderAssetPath(config, this.get('id'), 'favicon.ico', window.isProviderDomain),
+            },
+        }];
     }),
     idChanged: observer('id', function() {
         this.get('headTagsService').collectHeadTags();
