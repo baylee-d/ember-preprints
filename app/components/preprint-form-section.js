@@ -1,6 +1,5 @@
-import { get, observer } from '@ember/object';
 import { inject } from '@ember/service';
-import { on } from '@ember/object/evented';
+import { get, computed } from '@ember/object';
 import CpPanelComponent from 'ember-collapsible-panel/components/cp-panel/component';
 import Analytics from 'ember-osf/mixins/analytics';
 /**
@@ -41,6 +40,13 @@ export default CpPanelComponent.extend(Analytics, {
      */
     hasOpened: false,
 
+    trackOpenState: computed('isOpen', function() {
+        let isOpen = this.get('isOpen');
+        if (isOpen) {
+            this.set('hasOpened', true);
+        }
+    }),
+/*
     trackOpenState: observer('isOpen', function() {
         // Whenever panel is opened (via any means), update the hasOpened state to reflect this fact
         const isOpen = this.get('isOpen');
@@ -62,6 +68,30 @@ export default CpPanelComponent.extend(Analytics, {
      * because liquid-if will cause elements to be removed from DOM. This is can cause some
      * information to be lost (e.g. dropzone state).
      */
+    slideAnimation: computed('isOpen', function() {
+        if (this.get('animate')) {
+            // Allow liquid-fire to animate
+            return;
+        }
+        const $body = this.$('.cp-Panel-body');
+        if (this.get('isOpen')) {
+            $body.height('auto');
+            $body.height($body.height());
+            $body.one('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', () => {
+                $body.addClass('no-transition cp-is-open');
+                $body.height('');
+                $body[0].offsetHeight; // jshint ignore: line
+                $body.removeClass('no-transition');
+            });
+        } else {
+            $body.addClass('no-transition');
+            $body.height($body.height());
+            $body[0].offsetHeight; // jshint ignore: line
+            $body.removeClass('no-transition');
+            $body.height('');
+        }
+    }),
+    /*
     slideAnimation: observer('isOpen', function() {
         if (this.get('animate')) {
             // Allow liquid-fire to animate
@@ -72,7 +102,7 @@ export default CpPanelComponent.extend(Analytics, {
             $body.height('auto');
             $body.height($body.height());
             $body.one('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', () => {
-                $body.addClass('no-transition');
+                $body.addClass('no-transition cp-is-open');
                 $body.height('');
                 $body[0].offsetHeight; // eslint-disable-line no-unused-expressions
                 $body.removeClass('no-transition');
@@ -85,6 +115,7 @@ export default CpPanelComponent.extend(Analytics, {
             $body.height('');
         }
     }),
+    */
     // Called when panel is toggled
     handleToggle() {
         // Prevent closing all views
