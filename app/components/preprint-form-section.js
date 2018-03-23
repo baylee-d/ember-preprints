@@ -1,6 +1,5 @@
 import { inject } from '@ember/service';
-import { get, computed, observer } from '@ember/object';
-import { on } from '@ember/object/evented';
+import { get, computed } from '@ember/object';
 import CpPanelComponent from 'ember-collapsible-panel/components/cp-panel/component';
 import Analytics from 'ember-osf/mixins/analytics';
 /**
@@ -20,7 +19,7 @@ import Analytics from 'ember-osf/mixins/analytics';
  * {{/preprint-form-section}}
  * ```
  * @class preprint-form-section
- **/
+ * */
 
 export default CpPanelComponent.extend(Analytics, {
     i18n: inject(),
@@ -50,28 +49,11 @@ export default CpPanelComponent.extend(Analytics, {
 /*
     trackOpenState: observer('isOpen', function() {
         // Whenever panel is opened (via any means), update the hasOpened state to reflect this fact
-        let isOpen = this.get('isOpen');
+        const isOpen = this.get('isOpen');
         if (isOpen) {
             this.set('hasOpened', true);
         }
     }),
-*/
-    // WWHAT THE HELL IS ON AND WHY IS IT HERE
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
-    // FIXBEFOREMERGING
 
     // see if this can be done in the init hook instead
     // this might be better as a computed property, maybe? (computed alias)
@@ -122,13 +104,13 @@ export default CpPanelComponent.extend(Analytics, {
             $body.one('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', () => {
                 $body.addClass('no-transition cp-is-open');
                 $body.height('');
-                $body[0].offsetHeight; // jshint ignore: line
+                $body[0].offsetHeight; // eslint-disable-line no-unused-expressions
                 $body.removeClass('no-transition');
             });
         } else {
             $body.addClass('no-transition');
             $body.height($body.height());
-            $body[0].offsetHeight; // jshint ignore: line
+            $body[0].offsetHeight; // eslint-disable-line no-unused-expressions
             $body.removeClass('no-transition');
             $body.height('');
         }
@@ -144,7 +126,7 @@ export default CpPanelComponent.extend(Analytics, {
                     .trackEvent({
                         category: 'div',
                         action: 'click',
-                        label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Click to edit, ${this.name} section`
+                        label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Click to edit, ${this.name} section`,
                     });
                 this._super(...arguments);
             } else {

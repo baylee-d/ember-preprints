@@ -1,14 +1,13 @@
 import Component from '@ember/component';
-import EmberObject from '@ember/object';
-import { computed } from '@ember/object';
+import EmberObject, { computed, get } from '@ember/object';
 import { A } from '@ember/array';
-import { get } from '@ember/object';
 import { inject } from '@ember/service';
 import $ from 'jquery';
 import Analytics from 'ember-osf/mixins/analytics';
 
 function arrayEquals(arr1, arr2) {
-    return arr1.length === arr2.length && arr1.reduce((acc, val, i) => acc && val === arr2[i], true);
+    return arr1.length === arr2.length && arr1.reduce((acc, val, i) =>
+        acc && val === arr2[i], true);
 }
 
 function arrayStartsWith(arr, prefix) {
@@ -16,9 +15,11 @@ function arrayStartsWith(arr, prefix) {
 }
 
 const Column = EmberObject.extend({
+    // eslint-disable-next-line ember/avoid-leaking-state-in-components
     sortDefinition: ['text:asc'],
     filterText: '',
     selection: null,
+    // eslint-disable-next-line ember/avoid-leaking-state-in-components
     subjects: [],
     subjectsFiltered: computed('subjects.[]', 'filterText', function() {
         const filterTextLowerCase = this.get('filterText').toLowerCase();
@@ -30,7 +31,7 @@ const Column = EmberObject.extend({
 
         return subjects.filter(item => item.get('text').toLowerCase().includes(filterTextLowerCase));
     }),
-    subjectsSorted: computed.sort('subjectsFiltered', 'sortDefinition')
+    subjectsSorted: computed.sort('subjectsFiltered', 'sortDefinition'),
 });
 
 /**
@@ -67,9 +68,9 @@ export default Component.extend(Analytics, {
                 },
                 page: {
                     size: 150, // Law category has 117 (Jan 2018)
-                }
+                },
             })
-            .then(results => column.set('subjects', results ? results.toArray() : []));
+                .then(results => column.set('subjects', results ? results.toArray() : []));
         }
     },
 
@@ -114,7 +115,7 @@ export default Component.extend(Analytics, {
                 .trackEvent({
                     category: 'button',
                     action: 'click',
-                    label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Remove`
+                    label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Remove`,
                 });
 
             const allSelections = this.get('currentSubjects');
@@ -129,7 +130,7 @@ export default Component.extend(Analytics, {
                 .trackEvent({
                     category: 'button',
                     action: 'click',
-                    label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Add`
+                    label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Add`,
                 });
 
             this.set('hasChanged', true);
@@ -188,7 +189,7 @@ export default Component.extend(Analytics, {
                 .trackEvent({
                     category: 'button',
                     action: 'click',
-                    label: `Preprints - ${this.get('editMode') ? 'Edit' : 'Submit'} - Discard Discipline Changes`
+                    label: `Preprints - ${this.get('editMode') ? 'Edit' : 'Submit'} - Discard Discipline Changes`,
                 });
 
             this.resetColumnSelections();
@@ -201,10 +202,10 @@ export default Component.extend(Analytics, {
                 .trackEvent({
                     category: 'button',
                     action: 'click',
-                    label: `Preprints - ${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Save and Continue`
+                    label: `Preprints - ${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Save and Continue`,
                 });
 
             this.sendAction('saveSubjects', this.get('hasChanged'));
-        }
-    }
+        },
+    },
 });

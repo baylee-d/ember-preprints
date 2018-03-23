@@ -1,7 +1,6 @@
 import Component from '@ember/component';
 import { A } from '@ember/array';
-import { computed } from '@ember/object';
-import { get } from '@ember/object';
+import { computed, get } from '@ember/object';
 import Permissions from 'ember-osf/const/permissions';
 import { loadPage } from 'ember-osf/utils/load-relationship';
 import Analytics from 'ember-osf/mixins/analytics';
@@ -84,12 +83,12 @@ export default Component.extend(Analytics, {
 
     // Only make a request every 500 ms to let user finish typing.
     _getInitialUserNodes: task(function* (searchTerm) {
-        let userNodes = this.get('userNodes');
+        const userNodes = this.get('userNodes');
         userNodes.clear();
         yield timeout(500);
         this.set('currentPage', 1);
-        let currentUser = this.get('currentUser');
-        let results = yield loadPage(currentUser, 'nodes', 10, 1, {
+        const currentUser = this.get('currentUser');
+        const results = yield loadPage(currentUser, 'nodes', 10, 1, {
             filter: {
                 preprint: false,
                 title: searchTerm,
@@ -97,7 +96,7 @@ export default Component.extend(Analytics, {
         });
         // When the promise finishes, set the searchTerm
         this.set('searchTerm', searchTerm);
-        let onlyAdminNodes = results.results.filter((item) => item.get('currentUserPermissions').includes(Permissions.ADMIN));
+        const onlyAdminNodes = results.results.filter(item => item.get('currentUserPermissions').includes(Permissions.ADMIN));
         if (results.hasRemaining) {
             this.set('canLoadMore', true);
         } else {
@@ -108,23 +107,23 @@ export default Component.extend(Analytics, {
 
     _getMoreUserNodes: task(function* () {
         this.set('isLoading', true);
-        let currentPage = this.get('currentPage');
-        let currentUser = this.get('currentUser');
-        let searchTerm = this.get('searchTerm');
-        let nextPage = currentPage + 1;
-        let results = yield loadPage(currentUser, 'nodes', 10, nextPage, {
+        const currentPage = this.get('currentPage');
+        const currentUser = this.get('currentUser');
+        const searchTerm = this.get('searchTerm');
+        const nextPage = currentPage + 1;
+        const results = yield loadPage(currentUser, 'nodes', 10, nextPage, {
             filter: {
                 preprint: false,
                 title: searchTerm,
             },
         });
-        let userNodes = this.get('userNodes');
-        let onlyAdminNodes = results.results.filter((item) => item.get('currentUserPermissions').includes(Permissions.ADMIN));
+        const userNodes = this.get('userNodes');
+        let onlyAdminNodes = results.results.filter(item => item.get('currentUserPermissions').includes(Permissions.ADMIN));
         onlyAdminNodes = onlyAdminNodes.filter(item => !userNodes.contains(item));
         userNodes.pushObjects(onlyAdminNodes);
         if (results.hasRemaining) {
             this.set('canLoadMore', true);
-            this.set('currentPage', nextPage)
+            this.set('currentPage', nextPage);
         } else {
             this.set('canLoadMore', false);
         }
@@ -166,9 +165,8 @@ export default Component.extend(Analytics, {
                     category: 'dropdown',
                     action: 'select',
                     label: 'Submit - Choose Project',
-                    extra: node.id
+                    extra: node.id,
                 });
-
         },
         selectFile(file) {
             // Select existing file from file-browser
@@ -180,7 +178,7 @@ export default Component.extend(Analytics, {
                     category: 'file browser',
                     action: 'select',
                     label: 'Submit - Existing File Selected',
-                    extra: file.id
+                    extra: file.id,
                 });
         },
         changeExistingState(newState) {
@@ -194,16 +192,15 @@ export default Component.extend(Analytics, {
                     .trackEvent({
                         category: 'button',
                         action: 'click',
-                        label: 'Submit - Choose Select Existing File as Preprint'
+                        label: 'Submit - Choose Select Existing File as Preprint',
                     });
-
             } else if (newState === this.get('_existingState').NEWFILE) {
                 this.attrs.nextUploadSection('chooseFile', 'uploadNewFile');
                 get(this, 'metrics')
                     .trackEvent({
                         category: 'button',
                         action: 'click',
-                        label: 'Submit - Choose Upload Preprint'
+                        label: 'Submit - Choose Upload Preprint',
                     });
             }
         },
@@ -221,7 +218,7 @@ export default Component.extend(Analytics, {
         const fields = [
             'title',
             'root.title',
-            'parent.title'
+            'parent.title',
         ];
 
         const sanitizedTerm = stripDiacritics(term).toLowerCase();
@@ -238,5 +235,5 @@ export default Component.extend(Analytics, {
             }
         }
         return -1;
-    }
+    },
 });

@@ -2,10 +2,10 @@ import { computed } from '@ember/object';
 import { inject } from '@ember/service';
 import Route from '@ember/routing/route';
 import CasAuthenticatedRouteMixin from 'ember-osf/mixins/cas-authenticated-route';
-import ResetScrollMixin from '../mixins/reset-scroll';
-import SetupSubmitControllerMixin from '../mixins/setup-submit-controller';
 import ConfirmationMixin from 'ember-onbeforeunload/mixins/confirmation';
 
+import ResetScrollMixin from '../mixins/reset-scroll';
+import SetupSubmitControllerMixin from '../mixins/setup-submit-controller';
 /**
  * @module ember-preprints
  * @submodule routes
@@ -27,7 +27,7 @@ export default Route.extend(ConfirmationMixin, ResetScrollMixin, CasAuthenticate
         // Store the empty preprint to be created on the model hook for page. Node will be fetched
         //  internally during submission process.
         return this.get('store').createRecord('preprint', {
-            subjects: []
+            subjects: [],
         });
     },
     afterModel() {
@@ -45,5 +45,5 @@ export default Route.extend(ConfirmationMixin, ResetScrollMixin, CasAuthenticate
         // If true, shows a confirmation message when leaving the page
         // True if the user already created/chosen a project node
         return this.controller.get('hasDirtyFields');
-    }
+    },
 });

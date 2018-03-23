@@ -10,8 +10,8 @@ const TitleValidation = buildValidations({
             validator('length', {
                 // minimum length for title?
                 max: 200,
-            })
-        ]
+            }),
+        ],
     },
 });
 /**
@@ -42,5 +42,5 @@ export default Component.extend(TitleValidation, {
         } else {
             this.set('titleValid', false);
         }
-    })
+    }),
 });

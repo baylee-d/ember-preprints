@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@centerforopenscience/ember-osf": "https://github.com/laurenbarker/ember-osf#feature/upgrade-ember",
+    "@centerforopenscience/eslint-config": "^2.0.0",
     "@centerforopenscience/osf-style": "1.5.1",
     "broccoli-asset-rev": "^2.4.5",
     "coveralls": "2.11.16",
