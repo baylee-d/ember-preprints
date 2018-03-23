@@ -5,14 +5,15 @@ import Permissions from 'ember-osf/const/permissions';
 
 moduleForComponent('preprint-form-project-select', 'Integration | Component | preprint form project select', {
     integration: true,
-    beforeEach: function() {
-        let noop = () => {};
+    beforeEach() {
+        const noop = () => {};
         this.set('noop', noop);
-    }
+    },
 });
 
 function render(context, componentArgs) {
-    return context.render(Ember.HTMLBars.compile(`{{preprint-form-project-select
+    const htmlbars = new Ember.HTMLBars();
+    return context.render(htmlbars.compile(`{{preprint-form-project-select
         existingNodeExistingFile=(action noop)
         changeInitialState=(action noop)
         finishUpload=(action noop)
@@ -28,27 +29,27 @@ test('it renders', function(assert) {
 });
 
 test('isAdmin computed to false shows warning', function(assert) {
-    let componentArgs = `
+    const componentArgs = `
         selectedNode=selectedNode
         nodeLocked=true
     `;
 
     this.set('selectedNode', {
-        currentUserPermissions: [Permissions.ADMIN]
+        currentUserPermissions: [Permissions.ADMIN],
     });
     render(this, componentArgs);
     assert.ok(!this.$('.alert-danger').length);
 
     this.set('selectedNode', {
-        currentUserPermissions: []
+        currentUserPermissions: [],
     });
     render(this, componentArgs);
     assert.ok(this.$('.alert-danger').length);
 });
 
 skip('choosing a project locks the node', function() {
-    //TODO: Needs factories to work properly, as do more tests checking the changing
-    //states in this component, dependant on https://github.com/CenterForOpenScience/ember-preprints/pull/293/files
+    // TODO: Needs factories to work properly, as do more tests checking the changing
+    // states in this component, dependant on https://github.com/CenterForOpenScience/ember-preprints/pull/293/files
     test('choosing a project locks the node', function(assert) {
         render(this, 'userNodesLoaded=true userNodes=userNodes');
         assert.ok(this.$());

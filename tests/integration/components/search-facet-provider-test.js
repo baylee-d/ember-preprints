@@ -4,32 +4,33 @@ import Ember from '@ember/application';
 
 moduleForComponent('search-facet-provider', 'Integration | Component | search facet provider', {
     integration: true,
-    beforeEach: function() {
-        let osfProvider = {
+    beforeEach() {
+        const osfProvider = {
             doc_count: 99,
-            key: 'OSF'
+            key: 'OSF',
         };
-        let agrixivProvider = {
+        const agrixivProvider = {
             doc_count: 100,
-            key: 'AgriXiv'
+            key: 'AgriXiv',
         };
-        let otherProviders = A([
+        const otherProviders = A([
             osfProvider,
-            agrixivProvider
+            agrixivProvider,
         ]);
 
         this.set('otherProviders', otherProviders);
         this.set('facet', { key: 'sources', title: 'Providers', component: 'search-facet-provider' });
         this.set('key', 'sources');
-        let noop = () => {};
+        const noop = () => {};
         this.set('noop', noop);
         this.set('activeFilters', { providers: [], subjects: [] });
-        this.set('filterReplace',  {'Open Science Framework': 'OSF'});
-    }
+        this.set('filterReplace', { 'Open Science Framework': 'OSF' });
+    },
 });
 
 function render(context, componentArgs) {
-    return context.render(Ember.HTMLBars.compile(`{{search-facet-provider
+    const htmlbars = new Ember.HTMLBars();
+    return context.render(htmlbars.compile(`{{search-facet-provider
         key=key
         options=facet
         updateFilters=(action noop)
@@ -48,9 +49,9 @@ test('preprint providers and counts are listed', function(assert) {
 });
 
 test('filterReplace looks up key in mapping', function(assert) {
-   let osfProvider = {
+    const osfProvider = {
         doc_count: 99,
-        key: 'Open Science Framework'
+        key: 'Open Science Framework',
     };
     this.set('otherProviders', A([osfProvider]));
     render(this, 'otherProviders=otherProviders');

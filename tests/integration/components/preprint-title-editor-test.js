@@ -2,16 +2,17 @@ import Ember from '@ember/application';
 import { moduleForComponent, test } from 'ember-qunit';
 
 moduleForComponent('preprint-title-editor', 'Integration | Component | preprint title editor', {
-    integration: true
+    integration: true,
 });
 
 function render(context, componentArgs) {
-    return context.render(Ember.HTMLBars.compile(`{{preprint-title-editor
+    const htmlbars = new Ember.HTMLBars();
+    return context.render(htmlbars.compile(`{{preprint-title-editor
         ${componentArgs || ''}
     }}`));
 }
-//TODO: tests based on error messages, as isValid is not triggering properly
-//cursory glance at ember-cpi-validations seem to indicate trouble with testing
+// TODO: tests based on error messages, as isValid is not triggering properly
+// cursory glance at ember-cpi-validations seem to indicate trouble with testing
 
 test('renders valid title', function(assert) {
     render(this, 'title="This is a valid title"');
@@ -21,7 +22,7 @@ test('renders valid title', function(assert) {
 test('renders no title', function(assert) {
     this.set('title', 'Valid Title');
     render(this, 'title=title');
-    //Need to go from actual input to no input to trigger validation
+    // Need to go from actual input to no input to trigger validation
     this.set('title', '');
     assert.ok(this.$('.error').length);
 });
