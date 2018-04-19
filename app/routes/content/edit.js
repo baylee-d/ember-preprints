@@ -31,12 +31,6 @@ export default Route.extend(ConfirmationMixin, Analytics, ResetScrollMixin, Setu
         return this.get('i18n').t('submit.abandon_preprint_confirmation');
     }),
 
-    renderTemplate() {
-        // Overrides renderTemplate method.
-        // If query param /?edit is present, uses 'submit' template instead.
-        this.render('submit');
-    },
-
     afterModel(preprint) {
         return preprint.get('provider')
             .then((provider) => {
@@ -61,6 +55,18 @@ export default Route.extend(ConfirmationMixin, Analytics, ResetScrollMixin, Setu
             });
     },
 
+    setupController(controller, model) {
+        // Runs setupController for 'submit'
+        this.setupSubmitController(controller, model);
+
+        return this._super(...arguments);
+    },
+    renderTemplate() {
+        // Overrides renderTemplate method.
+        // If query param /?edit is present, uses 'submit' template instead.
+        this.render('submit');
+    },
+
     setup() {
         // Overrides setup method.  If query param /?edit is present,
         // uses 'submit' controller instead.
@@ -68,12 +74,6 @@ export default Route.extend(ConfirmationMixin, Analytics, ResetScrollMixin, Setu
         return this._super(...arguments);
     },
 
-    setupController(controller, model) {
-        // Runs setupController for 'submit'
-        this.setupSubmitController(controller, model);
-
-        return this._super(...arguments);
-    },
     isPageDirty() {
         // If true, shows a confirmation message when leaving the page
         // True if the user has any unsaved changes

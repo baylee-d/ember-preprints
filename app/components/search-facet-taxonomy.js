@@ -26,33 +26,6 @@ const pageSize = 150;
  */
 export default Component.extend(Analytics, {
     theme: inject(),
-    _getTaxonomies(parents = 'null') {
-        return this
-            .get('theme.provider')
-            .then(provider => provider
-                .queryHasMany('taxonomies', {
-                    filter: { parents },
-                    page: { size: pageSize },
-                }))
-            .then(results => results
-                .map(result => ({
-                    id: result.id,
-                    text: result.get('text'),
-                    children: [],
-                    showChildren: false,
-                    childCount: result.get('child_count'),
-                    shareTitle: result.get('shareTitle'),
-                    path: result.get('path'),
-                }))
-                .sort((prev, next) => {
-                    if (prev.text > next.text) {
-                        return 1;
-                    } else if (prev.text < next.text) {
-                        return -1;
-                    }
-                    return 0;
-                }));
-    },
     // Creates a list of all of the subject paths that need to be selected
     expandedList: computed('activeFilters.subjects', function() {
         const filters = this.get('activeFilters.subjects');
@@ -102,6 +75,33 @@ export default Component.extend(Analytics, {
                 });
             this._expand(item);
         },
+    },
+    _getTaxonomies(parents = 'null') {
+        return this
+            .get('theme.provider')
+            .then(provider => provider
+                .queryHasMany('taxonomies', {
+                    filter: { parents },
+                    page: { size: pageSize },
+                }))
+            .then(results => results
+                .map(result => ({
+                    id: result.id,
+                    text: result.get('text'),
+                    children: [],
+                    showChildren: false,
+                    childCount: result.get('child_count'),
+                    shareTitle: result.get('shareTitle'),
+                    path: result.get('path'),
+                }))
+                .sort((prev, next) => {
+                    if (prev.text > next.text) {
+                        return 1;
+                    } else if (prev.text < next.text) {
+                        return -1;
+                    }
+                    return 0;
+                }));
     },
     _expandDefault() {
         const topLevelItem = this.get('topLevelItem');

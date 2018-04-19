@@ -21,6 +21,7 @@ const Column = EmberObject.extend({
     filterText: '',
     selection: null,
     subjects: [],
+    subjectsSorted: sort('subjectsFiltered', 'sortDefinition'),
     subjectsFiltered: computed('subjects.[]', 'filterText', function() {
         const filterTextLowerCase = this.get('filterText').toLowerCase();
         const subjects = this.get('subjects');
@@ -31,7 +32,6 @@ const Column = EmberObject.extend({
 
         return subjects.filter(item => item.get('text').toLowerCase().includes(filterTextLowerCase));
     }),
-    subjectsSorted: sort('subjectsFiltered', 'sortDefinition')
 });
 
 /**
@@ -58,21 +58,7 @@ export default Component.extend(Analytics, {
     store: inject(),
     theme: inject(),
 
-    querySubjects(parents = 'null', tier = 0) {
-        const column = this.get('columns').objectAt(tier);
-
-        if (this.get('provider')) {
-            this.get('provider').queryHasMany('taxonomies', {
-                filter: {
-                    parents,
-                },
-                page: {
-                    size: 150, // Law category has 117 (Jan 2018)
-                }
-            })
-            .then(results => column.set('subjects', results ? results.toArray() : []));
-        }
-    },
+    isValid: notEmpty('currentSubjects'),
 
     init() {
         this._super(...arguments);
@@ -94,28 +80,13 @@ export default Component.extend(Analytics, {
         }
     },
 
-    isValid: notEmpty('currentSubjects'),
-
-    resetColumnSelections() {
-        const columns = this.get('columns');
-
-        columns.objectAt(0).set('selection', null);
-
-        for (let i = 1; i < columns.length; i++) {
-            const column = columns.objectAt(i);
-
-            column.set('subjects', null);
-            column.set('selection', null);
-        }
-    },
-
     actions: {
         deselect(index) {
             get(this, 'metrics')
                 .trackEvent({
                     category: 'button',
                     action: 'click',
-                    label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Remove`
+                    label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Remove`,
                 });
 
             const allSelections = this.get('currentSubjects');
@@ -130,7 +101,7 @@ export default Component.extend(Analytics, {
                 .trackEvent({
                     category: 'button',
                     action: 'click',
-                    label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Add`
+                    label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Add`,
                 });
 
             this.set('hasChanged', true);
@@ -189,7 +160,7 @@ export default Component.extend(Analytics, {
                 .trackEvent({
                     category: 'button',
                     action: 'click',
-                    label: `Preprints - ${this.get('editMode') ? 'Edit' : 'Submit'} - Discard Discipline Changes`
+                    label: `Preprints - ${this.get('editMode') ? 'Edit' : 'Submit'} - Discard Discipline Changes`,
                 });
 
             this.resetColumnSelections();
@@ -202,10 +173,39 @@ export default Component.extend(Analytics, {
                 .trackEvent({
                     category: 'button',
                     action: 'click',
-                    label: `Preprints - ${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Save and Continue`
+                    label: `Preprints - ${this.get('editMode') ? 'Edit' : 'Submit'} - Discipline Save and Continue`,
                 });
 
             this.saveSubjects(this.get('currentSubjects'), this.get('hasChanged'));
+        },
+    },
+    querySubjects(parents = 'null', tier = 0) {
+        const column = this.get('columns').objectAt(tier);
+
+        if (this.get('provider')) {
+            this.get('provider').queryHasMany('taxonomies', {
+                filter: {
+                    parents,
+                },
+                page: {
+                    size: 150, // Law category has 117 (Jan 2018)
+                },
+            })
+                .then(results => column.set('subjects', results ? results.toArray() : []));
         }
-    }
+    },
+
+    resetColumnSelections() {
+        const columns = this.get('columns');
+
+        columns.objectAt(0).set('selection', null);
+
+        for (let i = 1; i < columns.length; i++) {
+            const column = columns.objectAt(i);
+
+            column.set('subjects', null);
+            column.set('selection', null);
+        }
+    },
+
 });

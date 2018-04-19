@@ -61,6 +61,10 @@ export default Component.extend(Analytics, {
             });
     }.observes('preprint'),
 
+    fileDownloadURL: computed('selectedFile', function() {
+        return fileDownloadPath(this.get('selectedFile'), this.get('node'));
+    }),
+
     selectedFileChanged: observer('selectedFile', function() {
         const eventData = {
             file_views: {
@@ -105,10 +109,6 @@ export default Component.extend(Analytics, {
             }
         }
     }),
-    fileDownloadURL: computed('selectedFile', function() {
-        return fileDownloadPath(this.get('selectedFile'), this.get('node'));
-    }),
-
     init() {
         this._super(...arguments);
         this.__files();

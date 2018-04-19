@@ -31,10 +31,7 @@ export default Component.extend(Analytics, {
     store: inject(),
     theme: inject(),
     otherProviders: [],
-    searchUrl: config.OSF.shareSearchUrl,
     whiteListedProviders: config.whiteListedProviders.map(item => item.toLowerCase()),
-    osfUrl: config.OSF.url,
-
     init() {
         this._super(...arguments);
         Promise.all([
@@ -98,4 +95,7 @@ export default Component.extend(Analytics, {
                 this.notifyPropertyChange('otherProviders');
             });
     },
+    searchUrl: config.OSF.shareSearchUrl,
+    osfUrl: config.OSF.url,
+
 });
