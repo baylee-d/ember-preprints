@@ -20,7 +20,7 @@ import Analytics from 'ember-osf/mixins/analytics';
  * {{/preprint-form-section}}
  * ```
  * @class preprint-form-section
- **/
+ * */
 
 export default CpPanelComponent.extend(Analytics, {
     i18n: service(),
@@ -41,18 +41,18 @@ export default CpPanelComponent.extend(Analytics, {
      */
     hasOpened: false,
 
+    // Fix deprecation warning
+    _setup: on('init', observer('open', function() {
+        this.set('panelState.boundOpenState', this.get('open'));
+    })),
     trackOpenState: observer('isOpen', function() {
         // Whenever panel is opened (via any means), update the hasOpened state to reflect this fact
-        let isOpen = this.get('isOpen');
+        const isOpen = this.get('isOpen');
         if (isOpen) {
             this.set('hasOpened', true);
         }
     }),
 
-    // Fix deprecation warning
-    _setup: on('init', observer('open', function() {
-        this.set('panelState.boundOpenState', this.get('open'));
-    })),
     /* Manual animation
      * Can be omitted if using {{cp-panel-body}} instead of {{preprint-form-body}} because
      * cp-panel-body uses liquid-if for animation. preprint-form-body purposely avoids liquid-if
@@ -82,6 +82,11 @@ export default CpPanelComponent.extend(Analytics, {
             $body.height('');
         }
     }),
+    didReceiveAttrs() {
+        if (this.get('denyOpenMessage') === undefined) {
+            this.set('denyOpenMessage', this.get('i18n').t('submit.please_complete_upload'));
+        }
+    },
     // Called when panel is toggled
     handleToggle() {
         // Prevent closing all views
@@ -92,7 +97,7 @@ export default CpPanelComponent.extend(Analytics, {
                     .trackEvent({
                         category: 'div',
                         action: 'click',
-                        label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Click to edit, ${this.name} section`
+                        label: `${this.get('editMode') ? 'Edit' : 'Submit'} - Click to edit, ${this.name} section`,
                     });
                 this._super(...arguments);
             } else {
@@ -101,9 +106,4 @@ export default CpPanelComponent.extend(Analytics, {
         }
     },
 
-    didReceiveAttrs() {
-        if (this.get('denyOpenMessage') === undefined) {
-            this.set('denyOpenMessage', this.get('i18n').t('submit.please_complete_upload'));
-        }
-    },
 });

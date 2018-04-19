@@ -8,7 +8,7 @@ const App = Application.extend({
     LOG_TRANSITIONS_INTERNAL: true,
     modulePrefix: config.modulePrefix,
     podModulePrefix: config.podModulePrefix,
-    Resolver
+    Resolver,
 });
 
 loadInitializers(App, config.modulePrefix);
