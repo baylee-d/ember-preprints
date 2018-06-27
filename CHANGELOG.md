@@ -6,11 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 ### Added
+- Whitelist functionality for discover page
 - Unified solution for preprint words
+- use of ember-osf `scheduled-banner` component
+- Selected provider description in the provider carousel
+- use of "OSF Preprints" as provider name for OSF preprints instead of "OSF" or "Open Science Framework"
 
 ### Changed
 - Styling and format of the branded navbar to match current styling in ember-osf
 - Reduced number of calls to the `preprints_provider` endpoint
+- Update preprint submission page language.
 
 ## [0.118.5] - 2018-04-27
 ### Changed
@@ -19,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.118.4] - 2018-04-05
 ### Fixed
 - Automatic opening of upload section on branded provider submit page
+- Correctly show parent projects in the "Choose project" dropdown
 
 ### Removed
 - Unused image code

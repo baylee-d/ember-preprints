@@ -1,7 +1,7 @@
 import Controller from '@ember/controller';
 import { computed } from '@ember/object';
+import { alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import config from 'ember-get-config';
 import Analytics from 'ember-osf/mixins/analytics';
 
 /**
@@ -34,7 +34,7 @@ export default Controller.extend(Analytics, {
     },
     // TODO: Add a conversion from shareSource to provider names here if desired
     filterReplace: { // Map filter names for front-end display
-        'Open Science Framework': 'OSF',
+        'Open Science Framework': 'OSF Preprints',
         'Cognitive Sciences ePrint Archive': 'Cogprints',
         OSF: 'OSF Preprints',
         'Research Papers in Economics': 'RePEc',
@@ -52,6 +52,7 @@ export default Controller.extend(Analytics, {
     // Subject query param.  Must be passed to component, so can be reflected in URL
     tags: '',
     type: '',
+    whiteListedProviders: alias('meta.whitelisted_providers'),
     additionalProviders: computed('themeProvider', function() { // Do additionalProviders exist?
         // for now, using this property to alter many pieces of the landing/discover page
         return (this.get('themeProvider.additionalProviders') || []).length > 1;
@@ -137,6 +138,4 @@ export default Controller.extend(Analytics, {
     _clearQueryString() {
         this.set('q', '');
     },
-    // Type query param. Must be passed to component, so can be reflected in URL
-    whiteListedProviders: config.whiteListedProviders,
 });
