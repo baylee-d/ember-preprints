@@ -59,11 +59,13 @@ export default Route.extend(Analytics, ResetScrollMixin, SetupSubmitControllerMi
 
         this.set('fileDownloadURL', downloadUrl);
         this.set('preprint', preprint);
-        return preprint.get('provider')
-            .then(this._getProviderDetails.bind(this))
-            .then(this._getUserPermissions.bind(this))
-            .then(this._setupMetaData.bind(this))
-            .then(this.get('fetchWithdrawalRequest').perform());
+        if (!preprint.get('dateWithdrawn')) {
+            return preprint.get('provider')
+                .then(this._getProviderDetails.bind(this))
+                .then(this._getUserPermissions.bind(this))
+                .then(this._setupMetaData.bind(this))
+                .then(this.get('fetchWithdrawalRequest').perform());
+        }
     },
 
     setupController(controller, model) {
@@ -72,6 +74,7 @@ export default Route.extend(Analytics, ResetScrollMixin, SetupSubmitControllerMi
             node: this.get('node'),
             fileDownloadURL: this.get('fileDownloadURL'),
             isPendingWithdrawal: this.get('isPendingWithdrawal'),
+            isWithdrawn: model.get('dateWithdrawn') != null,
         });
 
         run.scheduleOnce('afterRender', this, function() {
@@ -80,17 +83,6 @@ export default Route.extend(Analytics, ResetScrollMixin, SetupSubmitControllerMi
 
         return this._super(...arguments);
     },
-
-    fetchWithdrawalRequest: task(function* () {
-        let withdrawalRequest = yield this.get('store').query(
-            'preprint-request',
-            { providerId: this.get('theme.id'), filter: { target: this.get('preprint.id'), machine_state: 'pending' } },
-        );
-        withdrawalRequest = withdrawalRequest.toArray();
-        if (withdrawalRequest.length >= 1) {
-            this.set('isPendingWithdrawal', true);
-        }
-    }),
 
     actions: {
         error(error) {
@@ -298,4 +290,15 @@ export default Route.extend(Analytics, ResetScrollMixin, SetupSubmitControllerMi
         this.set('headTags', headTags);
         this.get('headTagsService').collectHeadTags();
     },
+
+    fetchWithdrawalRequest: task(function* () {
+        let withdrawalRequest = yield this.get('store').query(
+            'preprint-request',
+            { providerId: this.get('theme.id'), filter: { target: this.get('preprint.id'), machine_state: 'pending' } },
+        );
+        withdrawalRequest = withdrawalRequest.toArray();
+        if (withdrawalRequest.length >= 1) {
+            this.set('isPendingWithdrawal', true);
+        }
+    }),
 });

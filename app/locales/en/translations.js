@@ -14,6 +14,7 @@ export default {
         none: 'None',
         abstract: 'Abstract',
         doi: 'DOI',
+        reason_for_withdrawal: 'Reason for withdrawal',
         tags: 'Tags',
         search: 'Search',
         preprints,
@@ -45,6 +46,7 @@ export default {
     content: {
         header: {
             last_edited: 'Last edited',
+            withdrawn_on: 'Withdrawn on',
         },
         date_label: {
             created_on: 'Created on',
@@ -410,6 +412,7 @@ export default {
                 accepted: 'has been accepted by a moderator and is publicly available and searchable',
                 rejected: 'has been rejected by a moderator and is not publicly available or searchable',
                 pending_withdrawal: 'This preprint has been requested by the administrators to be withdrawn. It will still be publicly searchable until the request has been approved.',
+                withdrawn: 'This preprint has been withdrawn by the author(s).',
             },
             pending: 'pending',
             accepted: 'accepted',

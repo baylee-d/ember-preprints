@@ -50,7 +50,9 @@ export default Controller.extend(Analytics, {
     isPendingWithdrawal: false,
     activeFile: null,
     chosenFile: null,
+    isWithdrawn: null,
     expandedAbstract: navigator.userAgent.includes('Prerender'),
+
     hasTag: computed.bool('model.tags.length'),
     metricsExtra: computed('model', function() {
         return this.get('model.id');
@@ -71,11 +73,6 @@ export default Controller.extend(Analytics, {
         return this.get('model.provider.reviewsWorkflow') === PRE_MODERATION ?
             DATE_LABEL.submitted :
             DATE_LABEL.created;
-    }),
-    relevantDate: computed('model.provider.reviewsWorkflow', function() {
-        return this.get('model.provider.reviewsWorkflow') ?
-            this.get('model.dateLastTransitioned') :
-            this.get('model.dateCreated');
     }),
 
     editButtonLabel: computed('model.{provider.reviewsWorkflow,reviewsState}', function () {
