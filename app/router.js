@@ -66,6 +66,7 @@ Router.map(function() {
         this.route('provider', { path: 'preprints/:slug' }, function () {
             this.route('content', { path: '/:preprint_id' }, function() {
                 this.route('edit');
+                this.route('withdraw');
             });
             this.route('discover');
             this.route('submit');
@@ -77,6 +78,7 @@ Router.map(function() {
 
     this.route('content', { path: '/:preprint_id' }, function() {
         this.route('edit');
+        this.route('withdraw');
     });
 });
 

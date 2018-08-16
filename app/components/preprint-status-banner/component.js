@@ -6,6 +6,7 @@ import { alias } from '@ember/object/computed';
 const PENDING = 'pending';
 const ACCEPTED = 'accepted';
 const REJECTED = 'rejected';
+const PENDING_WITHDRAWAL = 'pendingWithdrawal';
 
 const PRE_MODERATION = 'pre-moderation';
 const POST_MODERATION = 'post-moderation';
@@ -14,12 +15,14 @@ const ICONS = {
     [PENDING]: 'fa-hourglass-o',
     [ACCEPTED]: 'fa-check-circle-o',
     [REJECTED]: 'fa-times-circle-o',
+    [PENDING_WITHDRAWAL]: 'fa-hourglass-o',
 };
 
 const STATUS = {
     [PENDING]: 'components.preprint-status-banner.pending',
     [ACCEPTED]: 'components.preprint-status-banner.accepted',
     [REJECTED]: 'components.preprint-status-banner.rejected',
+    [PENDING_WITHDRAWAL]: 'components.preprint-status-banner.pending_withdrawal',
 };
 
 const MESSAGE = {
@@ -27,6 +30,7 @@ const MESSAGE = {
     [POST_MODERATION]: 'components.preprint-status-banner.message.pending_post',
     [ACCEPTED]: 'components.preprint-status-banner.message.accepted',
     [REJECTED]: 'components.preprint-status-banner.message.rejected',
+    [PENDING_WITHDRAWAL]: 'components.preprint-status-banner.message.pending_withdrawal',
 };
 
 const WORKFLOW = {
@@ -39,6 +43,7 @@ const CLASS_NAMES = {
     [POST_MODERATION]: 'preprint-status-pending-post',
     [ACCEPTED]: 'preprint-status-accepted',
     [REJECTED]: 'preprint-status-rejected',
+    [PENDING_WITHDRAWAL]: 'preprint-status-rejected',
 };
 
 export default Component.extend({
@@ -59,14 +64,21 @@ export default Component.extend({
     reviewerComment: alias('latestAction.comment'),
     reviewerName: alias('latestAction.creator.fullName'),
 
-    getClassName: computed('submission.{provider.reviewsWorkflow,reviewsState}', function() {
-        return this.get('submission.reviewsState') === PENDING ?
-            CLASS_NAMES[this.get('submission.provider.reviewsWorkflow')] :
-            CLASS_NAMES[this.get('submission.reviewsState')];
+    getClassName: computed('submission.{provider.reviewsWorkflow,reviewsState}', 'isPendingWithdrawal', function() {
+        if (this.get('isPendingWithdrawal')) {
+            return CLASS_NAMES[PENDING_WITHDRAWAL];
+        } else {
+            return this.get('submission.reviewsState') === PENDING ?
+                CLASS_NAMES[this.get('submission.provider.reviewsWorkflow')] :
+                CLASS_NAMES[this.get('submission.reviewsState')];
+        }
     }),
 
-    bannerContent: computed('statusExplanation', 'workflow', 'theme.{isProvider,provider.name}', function() {
+    bannerContent: computed('statusExplanation', 'workflow', 'theme.{isProvider,provider.name}', 'isPendingWithdrawal', function() {
         const i18n = this.get('i18n');
+        if (this.get('isPendingWithdrawal')) {
+            return i18n.t(this.get('statusExplanation'));
+        }
         const tName = this.get('theme.isProvider') ?
             this.get('theme.provider.name') :
             i18n.t('global.brand_name');
@@ -76,18 +88,30 @@ export default Component.extend({
         return `${i18n.t(this.get('baseMessage'), { name: tName, reviewsWorkflow: tWorkflow, documentType: this.get('submission.provider.documentType') })} ${tStatusExplanation}.`;
     }),
 
-    statusExplanation: computed('submission.{provider.reviewsWorkflow,reviewsState}', function() {
-        return this.get('submission.reviewsState') === PENDING ?
-            MESSAGE[this.get('submission.provider.reviewsWorkflow')] :
-            MESSAGE[this.get('submission.reviewsState')];
+    statusExplanation: computed('submission.{provider.reviewsWorkflow,reviewsState}', 'isPendingWithdrawal', function() {
+        if (this.get('isPendingWithdrawal')) {
+            return MESSAGE[PENDING_WITHDRAWAL];
+        } else {
+            return this.get('submission.reviewsState') === PENDING ?
+                MESSAGE[this.get('submission.provider.reviewsWorkflow')] :
+                MESSAGE[this.get('submission.reviewsState')];
+        }
     }),
 
-    status: computed('submission.reviewsState', function() {
-        return STATUS[this.get('submission.reviewsState')];
+    status: computed('submission.reviewsState', 'isPendingWithdrawal', function() {
+        if (this.get('isPendingWithdrawal')) {
+            return STATUS[PENDING_WITHDRAWAL];
+        } else {
+            return STATUS[this.get('submission.reviewsState')];
+        }
     }),
 
-    icon: computed('submission.reviewsState', function() {
-        return ICONS[this.get('submission.reviewsState')];
+    icon: computed('submission.reviewsState', 'isPendingWithdrawal', function() {
+        if (this.get('isPendingWithdrawal')) {
+            return ICONS[PENDING_WITHDRAWAL];
+        } else {
+            return ICONS[this.get('submission.reviewsState')];
+        }
     }),
 
     workflow: computed('submission.provider.reviewsWorkflow', function () {

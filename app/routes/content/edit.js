@@ -2,6 +2,7 @@ import { computed } from '@ember/object';
 import { inject as service } from '@ember/service';
 import Route from '@ember/routing/route';
 
+import { task } from 'ember-concurrency';
 import Analytics from 'ember-osf/mixins/analytics';
 import config from 'ember-get-config';
 import permissions from 'ember-osf/const/permissions';
@@ -22,6 +23,7 @@ import SetupSubmitControllerMixin from '../../mixins/setup-submit-controller';
 export default Route.extend(ConfirmationMixin, Analytics, ResetScrollMixin, SetupSubmitControllerMixin, { // eslint-disable-line max-len
     i18n: service(),
     theme: service(),
+    store: service(),
     headTagsService: service('head-tags'),
     currentUser: service('currentUser'),
 
@@ -34,10 +36,27 @@ export default Route.extend(ConfirmationMixin, Analytics, ResetScrollMixin, Setu
 
     afterModel(preprint) {
         this.set('preprint', preprint);
+        if (preprint.get('dateWithdrawn')) {
+            // if this preprint is withdrawn, then redirect to 'forbidden' page
+            this.replaceWith('forbidden');
+        }
         return preprint.get('provider')
             .then(this._getProviderInfo.bind(this))
-            .then(this._getContributors.bind(this));
+            .then(this._getContributors.bind(this))
+            .then(this.get('fetchWithdrawalRequest').perform());
     },
+
+    fetchWithdrawalRequest: task(function* () {
+        let withdrawalRequest = yield this.get('store').query(
+            'preprint-request',
+            { providerId: this.get('theme.id'), filter: { target: this.get('preprint.id'), machine_state: 'pending' } },
+        );
+        withdrawalRequest = withdrawalRequest.toArray();
+        if (withdrawalRequest.length >= 1) {
+            // If there is a pending withdrawal request, then redirect to 'forbidden'
+            this.replaceWith('forbidden');
+        }
+    }),
 
     setupController(controller, model) {
         // Runs setupController for 'submit'

@@ -47,6 +47,7 @@ export default Controller.extend(Analytics, {
     fullScreenMFR: false,
     expandedAuthors: true,
     showLicenseText: false,
+    isPendingWithdrawal: false,
     activeFile: null,
     chosenFile: null,
     expandedAbstract: navigator.userAgent.includes('Prerender'),
@@ -103,13 +104,13 @@ export default Controller.extend(Analytics, {
         return false;
     }),
 
-    showStatusBanner: computed('model.{provider.reviewsWorkflow,reviewsState}', 'userIsContrib', 'node.public', function() {
+    showStatusBanner: computed('model.{provider.reviewsWorkflow,reviewsState}', 'userIsContrib', 'node.public', 'isPendingWithdrawal', function() {
         return (
             this.get('model.provider.reviewsWorkflow')
             && this.get('node.public')
             && this.get('userIsContrib')
             && this.get('model.reviewsState') !== INITIAL
-        );
+        ) || this.get('isPendingWithdrawal');
     }),
 
     disciplineReduced: computed('model.subjects', function() {
