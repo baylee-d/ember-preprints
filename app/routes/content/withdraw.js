@@ -24,7 +24,7 @@ export default Route.extend(ConfirmationMixin, CasAuthenticatedRouteMixin, { // 
 
     afterModel(preprint) {
         this.set('preprint', preprint);
-        if (preprint.get('dateWithdrawn')) {
+        if (preprint.get('dateWithdrawn') || preprint.get('reviewsState') === 'rejected') {
             // if this preprint is withdrawn, then redirect to 'forbidden' page
             this.replaceWith('forbidden');
         }

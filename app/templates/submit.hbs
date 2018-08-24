@@ -6,7 +6,7 @@
             <div class="col-xs-12 col-md-10 col-md-offset-1 ">
                 {{#if editMode}}
                     {{fa-icon 'long-arrow-left'}}
-                    <a {{action 'returnToSubmission'}}>{{t "submit.body.edit.return_button" documentType=currentProvider.documentType}}</a>
+                    <a role="button" {{action 'returnToSubmission'}}>{{t "submit.body.edit.return_button" documentType=currentProvider.documentType}}</a>
                 {{/if}}
             </div>
             <div class="col-xs-12 text-center">
@@ -302,7 +302,11 @@
                                     }}
                                 </div>
                             {{/if}}
-                            <button class="btn {{if canResubmit 'btn-default' 'btn-danger'}} btn-md m-t-md pull-right" {{action 'clickWithdraw'}}> {{t "submit.body.edit.withdraw_button" documentType=currentProvider.documentType}} </button>
+
+                            {{#if (not (eq model.reviewsState 'rejected'))}}
+                                {{!-- Only shows the 'Withdraw preprint' button iff the preprint is not in a rejected state --}}
+                                <button class="btn {{if canResubmit 'btn-default' 'btn-danger'}} btn-md m-t-md pull-right" {{action 'clickWithdraw'}}> {{t "submit.body.edit.withdraw_button" documentType=currentProvider.documentType}} </button>
+                            {{/if}}
                         </div>
                     {{else}}
                         {{#if moderationType}}

@@ -34,21 +34,6 @@ export default Controller.extend({
         return this.get('model.isPublished') ? 'withdraw.withdraw_button_published' : 'withdraw.withdraw_button_not_published';
     }),
 
-    submitWithdrawalRequest: task(function* () {
-        const request = this.store.createRecord('preprint-request', {
-            comment: this.get('explanation'),
-            requestType: 'withdrawal',
-            target: this.get('model'),
-        });
-        try {
-            yield request.save();
-            // Go to the detail page once the withdrawal request is successfully submitted.
-            this.transitionToRoute(`${this.get('theme.isSubRoute') ? 'provider.' : ''}content`, this.get('model'));
-        } catch (e) {
-            this.get('toast').error(e.errors[0].detail);
-        }
-    }),
-
     actions: {
         cancel() {
             this.transitionToRoute(
@@ -57,4 +42,26 @@ export default Controller.extend({
             );
         },
     },
+
+    submitWithdrawalRequest: task(function* () {
+        const request = this.store.createRecord('preprint-request', {
+            comment: this.get('explanation'),
+            requestType: 'withdrawal',
+            target: this.get('model'),
+        });
+        try {
+            yield request.save();
+            if (!this.get('model.isPublished') && this.get('model.provider.reviewsWorkflow') === PRE_MODERATION) {
+                // If this preprint is not published and the provider is pre-mod.
+                // Transition to the landing page.
+                this.transitionToRoute(`${this.get('theme.isSubRoute') ? 'provider.' : ''}index`);
+                this.get('toast').success(this.get('i18n').t('withdraw.successfully_withdrawn', { documentType: this.get('model.provider.documentType') }));
+            } else {
+                // Go to the detail page once the withdrawal request is successfully submitted.
+                this.transitionToRoute(`${this.get('theme.isSubRoute') ? 'provider.' : ''}content`, this.get('model'));
+            }
+        } catch (e) {
+            this.get('toast').error(e.errors[0].detail);
+        }
+    }),
 });

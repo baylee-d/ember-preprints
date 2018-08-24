@@ -275,6 +275,7 @@ export default {
         withdraw_button_not_published: 'Withdraw',
         withdraw_button_published: 'Request withdrawal',
         cancel_button_label: 'Cancel',
+        successfully_withdrawn: 'Your {{documentType.singular}} has been successfully withdrawn.',
     },
     components: {
         'confirm-share-preprint': {
