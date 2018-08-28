@@ -85,9 +85,9 @@ export default Component.extend({
     bannerContent: computed('statusExplanation', 'workflow', 'theme.{isProvider,provider.name}', 'isPendingWithdrawal', 'isWithdrawn', function() {
         const i18n = this.get('i18n');
         if (this.get('isPendingWithdrawal')) {
-            return i18n.t(this.get('statusExplanation'));
+            return i18n.t(this.get('statusExplanation'), { documentType: this.get('submission.provider.documentType') });
         } else if (this.get('isWithdrawn')) {
-            return i18n.t(MESSAGE[WITHDRAWN]);
+            return i18n.t(MESSAGE[WITHDRAWN], { documentType: this.get('submission.provider.documentType') });
         } else {
             const tName = this.get('theme.isProvider') ?
                 this.get('theme.provider.name') :

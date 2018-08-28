@@ -37,12 +37,9 @@ export default Route.extend(ConfirmationMixin, CasAuthenticatedRouteMixin, { // 
         this.render('content.withdraw');
     },
     fetchWithdrawalRequest: task(function* () {
-        let withdrawalRequest = yield this.get('store').query(
-            'preprint-request',
-            { providerId: this.get('theme.id'), filter: { target: this.get('preprint.id'), machine_state: 'pending' } },
-        );
+        let withdrawalRequest = yield this.get('preprint.requests');
         withdrawalRequest = withdrawalRequest.toArray();
-        if (withdrawalRequest.length >= 1) {
+        if (withdrawalRequest.length >= 1 && withdrawalRequest[0].get('machineState') === 'pending') {
             // If there is a pending withdrawal request, then redirect to 'forbidden' page
             this.replaceWith('forbidden');
         }

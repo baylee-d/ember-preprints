@@ -74,7 +74,7 @@ export default Route.extend(Analytics, ResetScrollMixin, SetupSubmitControllerMi
             node: this.get('node'),
             fileDownloadURL: this.get('fileDownloadURL'),
             isPendingWithdrawal: this.get('isPendingWithdrawal'),
-            isWithdrawn: model.get('dateWithdrawn') != null,
+            isWithdrawn: model.get('dateWithdrawn') !== null,
         });
 
         run.scheduleOnce('afterRender', this, function() {
@@ -292,12 +292,9 @@ export default Route.extend(Analytics, ResetScrollMixin, SetupSubmitControllerMi
     },
 
     fetchWithdrawalRequest: task(function* () {
-        let withdrawalRequest = yield this.get('store').query(
-            'preprint-request',
-            { providerId: this.get('theme.id'), filter: { target: this.get('preprint.id'), machine_state: 'pending' } },
-        );
+        let withdrawalRequest = yield this.get('preprint.requests');
         withdrawalRequest = withdrawalRequest.toArray();
-        if (withdrawalRequest.length >= 1) {
+        if (withdrawalRequest.length >= 1 && withdrawalRequest[0].get('machineState') === 'pending') {
             this.set('isPendingWithdrawal', true);
         }
     }),
